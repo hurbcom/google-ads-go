@@ -1,7 +1,7 @@
-ADS_VERSION=v0
+ADS_VERSION=v8
 PROTO_ROOT_DIR=googleapis/
 PROTO_SRC_DIR=/google/ads/googleads/$(ADS_VERSION)/**/*.proto
-PROTO_OUT_DIR=$$GOPATH/src/github.com/kritzware/google-ads-go/
+PROTO_OUT_DIR=${PWD}
 PKG_PATH=paths=source_relative
 PROTOC_GO_ARGS=--go_out=plugins=grpc,$(PKG_PATH):$(PROTO_OUT_DIR)
 
@@ -26,7 +26,7 @@ test:
 		echo "converting proto $$(basename $$file)"; \
 		protoc -I=$(PROTO_ROOT_DIR) $(PROTOC_GO_ARGS) $$file; \
 	done; \
-	sh ./fix-package-paths.sh; \
+	bash ./fix-package-paths.sh; \
 	rm -rf google/
 	@echo "built proto files to $$(basename $(PROTO_OUT_DIR))"
 

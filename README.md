@@ -13,7 +13,7 @@
 ## Installation
 To install, simply run:
 ```bash
-$ go get -d github.com/kritzware/google-ads-go
+$ go get -d github.com/hurbcom/google-ads-go
 ```
 Make sure your PATH includes the $GOPATH/bin directory if you want to use the [CLI utils](https://github.com/kritzware/google-ads-go#cli):
 ```bash
@@ -27,32 +27,37 @@ package main
 import (
   "fmt"
 
-  "github.com/kritzware/google-ads-go/ads"
-  "github.com/kritzware/google-ads-go/services"
+  "github.com/hurcom/google-ads-go/ads"
+  "github.com/hurcom/google-ads-go/services"
 )
 
 func main() {
-  // Create a client from credentials file
-  client, err := ads.NewClientFromStorage("google-ads.json")
-  if err != nil {
-    panic(err)
-  }
-  
-  // Load the "GoogleAds" service
-  googleAdsService := services.NewGoogleAdsServiceClient(client.Conn())
-  
-  // Create a search request
-  request := services.SearchGoogleAdsRequest{
-    CustomerId: "2984242032",
-    Query:      "SELECT campaign.id, campaign.name FROM campaign ORDER BY campaign.id",
-  }
-  
-  // Get the results
-  response, err := googleAdsService.Search(client.Context(), &request)
-  for _, row := range response.Results {
-    campaign := row.Campaign
-    fmt.Printf("id: %d, name: %s\n", campaign.Id.Value, campaign.Name.Value)
-  }
+	// Create a client from credentials file
+	client, err := ads.NewClientFromStorage("credentials.json")
+	if err != nil {
+		panic(err)
+	}
+
+	// Load the "GoogleAds" service
+	googleAdsService := services.NewGoogleAdsServiceClient(client.Conn())
+
+	// Create a search request
+	request := services.SearchGoogleAdsRequest{
+		CustomerId: "123",
+		Query:      "SELECT segments.date, click_view.gclid FROM click_view WHERE segments.date = '2021-07-23'",
+	}
+
+	// Get the results
+	response, err := googleAdsService.Search(client.Context(), &request)
+	if err != nil {
+		log.Fatal(err)
+
+	}
+
+	// Printing results
+	for _, row := range response.Results {
+		fmt.Println(row.ClickView)
+	}
 }
 ```
 
@@ -101,6 +106,15 @@ Building `.pb.go` files from the original `googleads` protos should only be done
 
 Requirements:
 - [protoc](https://github.com/protocolbuffers/protobuf)
+
+Clone google ads repo:
+```bash
+$ make clone-googleapis
+```
+Or update:
+```bash
+$ make update-googleapis
+```
 
 Build `.pb.go` protos:
 ```bash

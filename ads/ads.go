@@ -4,14 +4,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/kritzware/google-ads-go/auth"
+	"github.com/hurbcom/google-ads-go/auth"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
-)
-
-const (
-	defaultVersion string = "v0"
 )
 
 type GoogleAdsClient struct {
@@ -24,19 +20,11 @@ type GoogleAdsClient struct {
 }
 
 type GoogleAdsClientParams struct {
-	ClientID        string
-	ClientSecret    string
-	DeveloperToken  string
-	RefreshToken    string
-	LoginCustomerID string
-}
-
-type googleAdsStorageParams struct {
 	ClientID        string `json:"client_id"`
 	ClientSecret    string `json:"client_secret"`
-	RefreshToken    string `json:"refresh_token"`
 	DeveloperToken  string `json:"developer_token"`
-	LoginCustomerID string `json:"login_customer_id",omitempty`
+	RefreshToken    string `json:"refresh_token"`
+	LoginCustomerID string `json:"login_customer_id"`
 }
 
 // NewClient creates a new client with specified credential params
@@ -83,16 +71,12 @@ func ReadCredentialsFile(filepath string) (*GoogleAdsClientParams, error) {
 	if err != nil {
 		return nil, err
 	}
-	var g googleAdsStorageParams
-	json.Unmarshal(file, &g)
+	var g *GoogleAdsClientParams
+	if err := json.Unmarshal(file, &g); err != nil {
+		return nil, err
+	}
 
-	return &GoogleAdsClientParams{
-		ClientID:        g.ClientID,
-		ClientSecret:    g.ClientSecret,
-		RefreshToken:    g.RefreshToken,
-		DeveloperToken:  g.DeveloperToken,
-		LoginCustomerID: g.LoginCustomerID,
-	}, nil
+	return g, nil
 }
 
 // Conn returns a pointer to the clients gRPC connection

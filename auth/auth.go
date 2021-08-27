@@ -64,9 +64,13 @@ func NewGrpcConnection(token *oauth2.Token, developerToken string, loginCustomer
 // TODO: Add support for login-customer-id
 // https://developers.google.com/google-ads/api/docs/concepts/call-structure#login-customer-id
 func createHeaders(accessToken string, developerToken string, loginCustomerID string) metadata.MD {
-	return metadata.Pairs(
+	meta := metadata.Pairs(
 		"Authorization", fmt.Sprintf("Bearer %s", accessToken),
 		"developer-token", developerToken,
-		"login-customer-id", loginCustomerID,
 	)
+	if loginCustomerID != "" {
+		meta.Set("login-customer-id", loginCustomerID)
+	}
+
+	return meta
 }
